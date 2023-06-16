@@ -23,35 +23,42 @@ const storage = multer.memoryStorage(); // Store file in memory
 const upload = multer({ storage: storage });
 
 // Endpoint untuk mengambil Articles berdasarkan ID
-app.get('/articles/:id', (req, res) => {
-  const ArticlesId = req.params.id;
-
-  // Mengakses Firestore dan mengambil Articles
-  admin.firestore().collection('articles').doc(ArticlesId).get()
-    .then((doc) => {
-      if (doc.exists) {
-        const ArticlesData = doc.data();
-        const ArticlesLink = ArticlesData.link;
-        const ArticlesTitle = ArticlesData.title;      
-        const ArticlesGambar = ArticlesData.Gambar;
-
-        // Mengirim link Articles sebagai respons
-        res.json({ id: ArticlesId, 
-          title: ArticlesTitle, 
-          link: ArticlesLink, 
-          Gambar: ArticlesGambar
-        });
+app.get('/articles', (req, res) => {
+  // Mengakses Firestore dan mengambil semua Articles
+  admin.firestore().collection('articles').get()
+    .then((snapshot) => {
+      if (snapshot.empty) {
+        // Jika tidak ada Articles yang ditemukan
+        res.status(404).json({ error: 'Tidak ada artikel yang ditemukan' });
       } else {
-        // Jika Articles tidak ditemukann
-        res.status(404).json({ error: 'Articles tidak ditemukan' });
+        const articles = [];
+        snapshot.forEach((doc) => {
+          const articleData = doc.data();
+          const articleId = doc.id;
+          const articleLink = articleData.link;
+          const articleTitle = articleData.title;
+          const articleGambar = articleData.Gambar;
+          const articleTag = articleData.Tag;
+
+          articles.push({
+            id: articleId,
+            title: articleTitle,
+            link: articleLink,
+            Gambar: articleGambar,
+            Tag: articleTag
+          });
+        });
+
+        // Mengirim semua Articles sebagai respons
+        res.json(articles);
       }
     })
-    
     .catch((error) => {
       // Jika terjadi kesalahan saat mengambil Articles
       res.status(500).json({ error: 'Terjadi kesalahan saat mengambil artikel' });
     });
 });
+
 
 app.listen(8000, () => {
   console.log(`Server running on port 8000`);
