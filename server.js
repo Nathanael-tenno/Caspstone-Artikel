@@ -32,9 +32,14 @@ app.get('/articles/:id', (req, res) => {
       if (doc.exists) {
         const ArticlesData = doc.data();
         const ArticlesLink = ArticlesData.link;
+        const ArticlesTitle = ArticlesData.title;      
 
         // Mengirim link Articles sebagai respons
-        res.json({ link: ArticlesLink });
+        res.json({ id: ArticlesId, 
+          Judul: ArticlesTitle, 
+          link: ArticlesLink, 
+          
+        });
       } else {
         // Jika Articles tidak ditemukann
         res.status(404).json({ error: 'Articles tidak ditemukan' });
