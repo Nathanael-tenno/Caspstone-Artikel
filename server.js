@@ -33,12 +33,13 @@ app.get('/articles/:id', (req, res) => {
         const ArticlesData = doc.data();
         const ArticlesLink = ArticlesData.link;
         const ArticlesTitle = ArticlesData.title;      
+        const ArticlesGambar = ArticlesData.Gambar;
 
         // Mengirim link Articles sebagai respons
         res.json({ id: ArticlesId, 
-          Judul: ArticlesTitle, 
+          title: ArticlesTitle, 
           link: ArticlesLink, 
-          
+          Gambar: ArticlesGambar
         });
       } else {
         // Jika Articles tidak ditemukann
